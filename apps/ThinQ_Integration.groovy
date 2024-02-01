@@ -315,7 +315,6 @@ def uninstalled() {
 def initialize() {
 	logger("debug", "initialize()")
 	def hasV1Device = false
-	def hasV2Device = false
 	cleanupChildDevices()
 	for (d in thinqDevices) {
 		def deviceDetails = state.foundDevices.find { it.id == d }
@@ -341,8 +340,6 @@ def initialize() {
 		}
 		if (!hasV1Device)
 			hasV1Device = deviceDetails.version == "thinq1"
-		if (!hasV2Device)
-			hasV2Device = deviceDetails.version == "thinq2"
 		def childDevice = getChildDevice("thinq:"+deviceDetails.id)
 		if (childDevice == null) {
 			childDevice = addChildDevice("dcm.thinq", driverName, "thinq:" + deviceDetails.id, 1234, ["name": deviceDetails.name, isComponent: false])
@@ -365,8 +362,8 @@ def initialize() {
 
 	if (hasV1Device)
 		schedule("0 */1 * * * ? *", refreshV1Devices)
-	if (hasV2Device)
-		schedule("0 45 */2 * * ? *", register)
+
+	schedule("0 45 */2 * * ? *", register)
 }
 
 def getDeviceSnapshot(devDetails, child) {
